@@ -19,12 +19,12 @@ resource "aws_network_acl" "main" {
   subnet_ids = aws_subnet.elasticsearch[*].id
 
   ingress {
-    protocol   = "tcp"
+    protocol   = "all"
     rule_no    = 100
     action     = "allow"
-    cidr_block = var.vpc_cidr
-    from_port  = 443
-    to_port    = 443
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
   }
 
   egress {

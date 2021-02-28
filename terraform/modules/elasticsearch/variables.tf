@@ -18,10 +18,22 @@ variable volume_size {
   type = number
 }
 
-variable subnet_count {
+variable subnet_ids {
+  type = list(string)
+}
+
+variable cluster_subnet_count {
   type = number
 }
 
 variable create_service_linked_role {
   type = bool
+}
+
+variable vpc_id {
+  type = string
+}
+
+variable sg_ingress_cidrs {
+  type = list(string)
 }

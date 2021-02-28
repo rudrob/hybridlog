@@ -9,21 +9,25 @@ resource "aws_iam_access_key" "lb" {
 resource "aws_security_group" "main" {
   name        = "elasticsearch-${var.domain_name}"
   description = "Security group for elasticsearch cluster nodes"
-  vpc_id      = data.terraform_remote_state.networking.outputs.vpc_id
+  vpc_id      = var.vpc_id
 
   ingress {
-    from_port = 443
-    to_port   = 443
+    from_port = 0
+    to_port   = 0
     protocol  = "tcp"
 
-    cidr_blocks = [
-      data.terraform_remote_state.networking.outputs.vpc_cidr
-    ]
+    cidr_blocks = var.sg_ingress_cidrs
+  }
+
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "all"
   }
 }
 
 resource "aws_iam_service_linked_role" "es" {
-  count = var.create_service_linked_role ? 1 : 0
+  count            = var.create_service_linked_role ? 1 : 0
   aws_service_name = "es.amazonaws.com"
 }
 
@@ -44,7 +48,7 @@ resource "aws_elasticsearch_domain" "main" {
   }
 
   vpc_options {
-    subnet_ids         = slice(data.terraform_remote_state.networking.outputs.subnet_ids, 0, var.subnet_count)
+    subnet_ids         = slice(var.subnet_ids, 0, var.cluster_subnet_count)
     security_group_ids = [aws_security_group.main.id]
   }
 

@@ -6,6 +6,6 @@ instance_type              = "t2.small.elasticsearch"
 volume_size                = 10
 elasticsearch_version      = "7.9"
 domain_name                = "seclog"
-subnet_count               = 1
+cluster_subnet_count       = 1
 instance_count             = 1
 create_service_linked_role = false
