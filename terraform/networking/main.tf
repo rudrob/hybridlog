@@ -15,7 +15,7 @@ resource "aws_internet_gateway" "elasticsearch" {
 }
 
 resource "aws_network_acl" "main" {
-  vpc_id = aws_vpc.elasticsearch.id
+  vpc_id     = aws_vpc.elasticsearch.id
   subnet_ids = aws_subnet.elasticsearch[*].id
 
   ingress {
@@ -43,6 +43,12 @@ resource "aws_network_acl" "main" {
 
 resource "aws_route_table" "elasticsearch" {
   vpc_id = aws_vpc.elasticsearch.id
+
+  // todo probably can be restricted to vpc endpoint for es - but won't work with only local route
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.elasticsearch.id
+  }
 
   tags = {
     Name = var.elasticsearch_tag
