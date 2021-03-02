@@ -15,14 +15,14 @@ resource "aws_security_group" "main" {
     from_port = 0
     to_port   = 0
     protocol  = "tcp"
-
     cidr_blocks = var.sg_ingress_cidrs
   }
 
   egress {
     from_port = 0
     to_port   = 0
-    protocol  = "all"
+    protocol  = "tcp"
+    cidr_blocks = var.sg_egress_cidrs
   }
 }
 

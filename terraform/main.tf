@@ -18,5 +18,6 @@ module "elasticsearch" {
   vpc_id                     = module.networking.vpc_id
   cluster_subnet_count       = var.cluster_subnet_count
   subnet_ids                 = module.networking.subnet_ids
-  sg_ingress_cidrs           = [var.vpc_cidr]
+  sg_ingress_cidrs           = var.subnet_cidrs
+  sg_egress_cidrs            = var.subnet_cidrs
 }

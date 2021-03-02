@@ -37,3 +37,7 @@ variable vpc_id {
 variable sg_ingress_cidrs {
   type = list(string)
 }
+
+variable sg_egress_cidrs {
+  type = list(string)
+}

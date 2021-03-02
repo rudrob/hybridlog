@@ -17,7 +17,7 @@ resource "aws_internet_gateway" "elasticsearch" {
 resource "aws_network_acl" "main" {
   vpc_id     = aws_vpc.elasticsearch.id
   subnet_ids = aws_subnet.elasticsearch[*].id
-
+  // permissive nacl - access will be controlled by sg mostly
   ingress {
     protocol   = "all"
     rule_no    = 100
