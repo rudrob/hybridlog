@@ -1,21 +1,3 @@
-
-### NETWORKING
-variable "vpc_cidr" {
-  type = string
-}
-
-variable "availability_zones" {
-  type = list(string)
-}
-
-variable "subnet_cidrs" {
-  type = list(string)
-}
-
-variable "elasticsearch_tag" {
-  type = string
-}
-
 ### ELASTICSEARCH
 variable instance_type {
   type = string
@@ -37,10 +19,15 @@ variable volume_size {
   type = number
 }
 
-variable cluster_subnet_count {
-  type = number
-}
-
 variable create_service_linked_role {
   type = bool
 }
+
+variable kibana_master_user_name {
+  type = string
+}
+
+variable kibana_master_user_password {
+  type = string
+}
+

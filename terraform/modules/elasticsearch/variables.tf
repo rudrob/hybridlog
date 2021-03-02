@@ -18,26 +18,14 @@ variable volume_size {
   type = number
 }
 
-variable subnet_ids {
-  type = list(string)
-}
-
-variable cluster_subnet_count {
-  type = number
-}
-
 variable create_service_linked_role {
   type = bool
 }
 
-variable vpc_id {
+variable kibana_master_user_name {
   type = string
 }
 
-variable sg_ingress_cidrs {
-  type = list(string)
-}
-
-variable sg_egress_cidrs {
-  type = list(string)
+variable kibana_master_user_password {
+  type = string
 }
