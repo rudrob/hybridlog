@@ -19,15 +19,23 @@ variable volume_size {
   type = number
 }
 
-variable create_service_linked_role {
-  type = bool
-}
-
-variable kibana_master_user_name {
+variable master_user_name {
   type = string
 }
 
-variable kibana_master_user_password {
+variable master_user_password {
+  type = string
+}
+
+variable ip_whitelist {
+  type = list(string)
+}
+
+variable "client_id" {
+  type = string
+}
+
+variable "provider_name" {
   type = string
 }
 

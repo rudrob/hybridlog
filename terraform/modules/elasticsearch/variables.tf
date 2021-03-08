@@ -18,14 +18,22 @@ variable volume_size {
   type = number
 }
 
-variable create_service_linked_role {
-  type = bool
-}
-
-variable kibana_master_user_name {
+variable master_user_arn {
   type = string
 }
 
-variable kibana_master_user_password {
+variable amazon_es_cognito_role_arn {
+  type = string
+}
+
+variable ip_whitelist {
+  type = list(string)
+}
+
+variable user_pool_id {
+  type = string
+}
+
+variable identity_pool_id {
   type = string
 }

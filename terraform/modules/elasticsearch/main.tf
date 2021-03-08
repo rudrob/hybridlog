@@ -6,11 +6,6 @@ resource "aws_iam_access_key" "lb" {
   user = aws_iam_user.es_publisher.name
 }
 
-resource "aws_iam_service_linked_role" "es" {
-  count            = var.create_service_linked_role ? 1 : 0
-  aws_service_name = "es.amazonaws.com"
-}
-
 resource "aws_elasticsearch_domain" "main" {
   domain_name           = var.domain_name
   elasticsearch_version = var.elasticsearch_version
@@ -39,12 +34,19 @@ resource "aws_elasticsearch_domain" "main" {
     volume_size = var.volume_size
   }
 
+  cognito_options {
+    enabled          = true
+    user_pool_id     = var.user_pool_id
+    identity_pool_id = var.identity_pool_id
+    # ARN of the IAM role that has the AmazonESCognitoAccess policy attached
+    role_arn         = var.amazon_es_cognito_role_arn
+  }
+
   advanced_security_options {
     enabled                        = true
-    internal_user_database_enabled = true
+    internal_user_database_enabled = false
     master_user_options {
-      master_user_name     = var.kibana_master_user_name
-      master_user_password = var.kibana_master_user_password
+      master_user_arn = var.master_user_arn
     }
   }
 
@@ -52,28 +54,26 @@ resource "aws_elasticsearch_domain" "main" {
     Domain = var.domain_name
   }
 
-  depends_on = [aws_iam_service_linked_role.es]
 
   access_policies = jsonencode({
     Version = "2012-10-17"
     Statement = [
-//      {
-//        Action = [
-//          "es:ESHttp*"
-//        ]
-//        Effect    = "Allow"
-//        Resource  = "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.domain_name}/*"
-//        Principal = { AWS = [aws_iam_user.es_publisher.arn] }
-//        Condition = { IpAddress = { "aws:SourceIp" = ["85.221.142.99/32"] } }
-//        },
       {
         Action = [
           "es:ESHttp*"
         ]
         Effect    = "Allow"
         Resource  = "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.domain_name}/*"
-        Principal = { AWS = "*" }
-        Condition = { IpAddress = { "aws:SourceIp" = ["85.221.142.99/32"] } }
+        Principal = { AWS = [aws_iam_user.es_publisher.arn] }
+        Condition = { IpAddress = { "aws:SourceIp" = var.ip_whitelist } }
+      },
+      {
+        Action = [
+          "es:ESHttp*"
+        ]
+        Effect    = "Allow"
+        Resource  = "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.domain_name}/*"
+        Principal = { AWS = [var.master_user_arn] }
       }
     ]
   })
