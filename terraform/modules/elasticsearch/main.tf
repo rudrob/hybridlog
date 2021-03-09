@@ -43,8 +43,8 @@ resource "aws_elasticsearch_domain" "main" {
     enabled                        = true
     internal_user_database_enabled = true
     master_user_options {
-      master_user_name     = var.kibana_master_user_name
-      master_user_password = var.kibana_master_user_password
+      master_user_name     = var.master_user_name
+      master_user_password = var.master_user_password
     }
   }
 
@@ -57,15 +57,6 @@ resource "aws_elasticsearch_domain" "main" {
   access_policies = jsonencode({
     Version = "2012-10-17"
     Statement = [
-//      {
-//        Action = [
-//          "es:ESHttp*"
-//        ]
-//        Effect    = "Allow"
-//        Resource  = "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.domain_name}/*"
-//        Principal = { AWS = [aws_iam_user.es_publisher.arn] }
-//        Condition = { IpAddress = { "aws:SourceIp" = ["85.221.142.99/32"] } }
-//        },
       {
         Action = [
           "es:ESHttp*"

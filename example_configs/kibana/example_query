@@ -1,0 +1,14 @@
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {"@timestamp" : {"gt" : "now-24h"}}
+        },
+        {
+          "term": { "event_type": "alert"}
+        }
+      ]
+    }
+  }
+}
