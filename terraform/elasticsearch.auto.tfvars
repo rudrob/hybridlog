@@ -7,8 +7,9 @@
 instance_type              = "t3.small.elasticsearch"
 volume_size                = 10
 elasticsearch_version      = "7.9"
-domain_name                = "hybridlog2"
+domain_name                = "hybridlog"
 cluster_subnet_count       = 1
 instance_count             = 1
 create_service_linked_role = false
-
+//cw_logging_types           = ["INDEX_SLOW_LOGS", "SEARCH_SLOW_LOGS", "ES_APPLICATION_LOGS", "AUDIT_LOGS"]
+cw_logging_types           = []

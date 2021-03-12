@@ -1,6 +1,5 @@
 resource "aws_sns_topic" "es_alerts" {
   name              = "${var.topic_prefix_name}-alerts"
-  kms_master_key_id = "aws/sns"
 }
 
 resource "aws_iam_role" "es_sns_role" {

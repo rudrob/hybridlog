@@ -64,8 +64,44 @@ resource "aws_elasticsearch_domain" "main" {
         Effect    = "Allow"
         Resource  = "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.domain_name}/*"
         Principal = { AWS = "*" }
-        Condition = { IpAddress = { "aws:SourceIp" = ["85.221.142.99/32"] } }
+        Condition = { IpAddress = { "aws:SourceIp" = var.ip_whitelist } }
       }
     ]
+  })
+  dynamic "log_publishing_options" {
+    for_each = toset(var.cw_logging_types)
+    content {
+      cloudwatch_log_group_arn = aws_cloudwatch_log_group.es_cloudwatch_log_group[log_publishing_options.value].arn
+      log_type                 = log_publishing_options.value
+    }
+  }
+
+}
+
+resource "aws_cloudwatch_log_group" "es_cloudwatch_log_group" {
+  for_each = toset(var.cw_logging_types)
+  name     = "es_cloudwatch_group_${each.value}"
+}
+
+resource "aws_cloudwatch_log_resource_policy" "es_cloudwatch_policy" {
+  policy_name = "es_cloudwatch_policy"
+
+  policy_document = jsonencode(
+    {
+      "Version" : "2012-10-17",
+      "Statement" : [
+        {
+          Effect : "Allow"
+          Principal : {
+            "Service" : "es.amazonaws.com"
+          },
+          Action : [
+            "logs:PutLogEvents",
+            "logs:PutLogEventsBatch",
+            "logs:CreateLogStream"
+          ],
+          Resource : "arn:aws:logs:*"
+        }
+      ]
   })
 }

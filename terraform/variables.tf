@@ -1,33 +1,41 @@
 ### ELASTICSEARCH
-variable instance_type {
+variable "instance_type" {
   type = string
 }
 
-variable instance_count{
+variable "instance_count" {
   type = number
 }
 
-variable elasticsearch_version {
+variable "elasticsearch_version" {
   type = string
 }
 
-variable domain_name {
+variable "domain_name" {
   type = string
 }
 
-variable volume_size {
+variable "volume_size" {
   type = number
 }
 
-variable create_service_linked_role {
+variable "create_service_linked_role" {
   type = bool
 }
 
-variable master_user_name {
+variable "master_user_name" {
   type = string
 }
 
-variable master_user_password {
+variable "master_user_password" {
   type = string
 }
 
+variable "cw_logging_types" {
+  type    = list(string)
+  default = []
+}
+
+variable "ip_whitelist" {
+  type = list(string)
+}

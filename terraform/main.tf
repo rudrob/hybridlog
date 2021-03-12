@@ -8,6 +8,8 @@ module "elasticsearch" {
   create_service_linked_role = var.create_service_linked_role
   master_user_name           = var.master_user_name
   master_user_password       = var.master_user_password
+  cw_logging_types           = var.cw_logging_types
+  ip_whitelist               = var.ip_whitelist
 }
 
 module "sns" {
