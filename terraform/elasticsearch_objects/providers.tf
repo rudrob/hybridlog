@@ -10,7 +10,7 @@ terraform {
 }
 
 provider "elasticsearch" {
-  url                   = "https://${data.terraform_remote_state.main.outputs.elasticsearch_url}"
+  url                   = data.terraform_remote_state.main.outputs.elasticsearch_url
   sniff                 = false
   healthcheck           = false
   elasticsearch_version = var.elasticsearch_version

@@ -1,0 +1,10 @@
+Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.
+- Trigger name: {{ctx.trigger.name}}
+- Severity: {{ctx.trigger.severity}}
+- Period start: {{ctx.periodStart}}
+- Period end: {{ctx.periodEnd}}
+
+Alerts
+{{#ctx.results.0.hits.hits}}
+Alert signature: {{_source.alert.signature}} Timestamp: {{_source.@timestamp}}
+{{/ctx.results.0.hits.hits}}

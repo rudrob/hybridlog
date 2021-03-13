@@ -16,5 +16,3 @@ module "sns" {
   source            = "../modules/sns"
   topic_prefix_name = var.domain_name
 }
-
-

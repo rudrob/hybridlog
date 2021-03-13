@@ -3,7 +3,7 @@ resource "aws_sns_topic" "es_alerts" {
 }
 
 resource "aws_iam_role" "es_sns_role" {
-  name        = "es_sns_role"
+  name        = "es_alerting_role"
   description = "this role is used by es service to publish communicates to sns topic"
 
   assume_role_policy = jsonencode({
