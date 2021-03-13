@@ -12,4 +12,4 @@ cluster_subnet_count       = 1
 instance_count             = 1
 create_service_linked_role = false
 //cw_logging_types           = ["INDEX_SLOW_LOGS", "SEARCH_SLOW_LOGS", "ES_APPLICATION_LOGS", "AUDIT_LOGS"]
-cw_logging_types           = []
+cw_logging_types = []

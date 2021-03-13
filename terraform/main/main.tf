@@ -1,5 +1,5 @@
 module "elasticsearch" {
-  source                     = "./modules/elasticsearch"
+  source                     = "../modules/elasticsearch"
   instance_type              = var.instance_type
   volume_size                = var.volume_size
   elasticsearch_version      = var.elasticsearch_version
@@ -13,6 +13,8 @@ module "elasticsearch" {
 }
 
 module "sns" {
-  source            = "./modules/sns"
+  source            = "../modules/sns"
   topic_prefix_name = var.domain_name
 }
+
+
