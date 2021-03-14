@@ -3,7 +3,6 @@ locals {
   es_alerting_role_arn = data.terraform_remote_state.main.outputs.es_alerting_role_arn
 }
 
-
 # Should rollover be configured? Maybe? But seems not supported easily by provider
 resource "elasticsearch_index" "test" {
   name = "suricata-log"
@@ -13,6 +12,9 @@ resource "elasticsearch_index" "test" {
   # ??? is it even working
   force_destroy = true
 }
+
+// for some reason there is a bug in this resource when it's created each time even when it's already there in
+// kibana and tf state - perhaps it's a api bug or sth
 
 resource "elasticsearch_opendistro_destination" "sns_alerts_destination" {
   body = jsonencode(
@@ -122,3 +124,24 @@ resource "elasticsearch_opendistro_monitor" "suricata_monitor" {
   }
   )
 }
+
+// this seems to just NOT WORK...
+
+//resource "elasticsearch_kibana_object" "test_index_pattern_v7" {
+//  body = <<EOF
+//[
+//  {
+//    "_id": "index-pattern:suricata-log",
+//    "_type": "doc",
+//    "_source": {
+//      "type": "index-pattern",
+//      "index-pattern": {
+//        "title": "suricata-log*",
+//        "timeFieldName": "@timestamp"
+//      }
+//    }
+//  }
+//]
+//EOF
+//}
+
