@@ -19,14 +19,16 @@ filebeat.inputs:
   # Below are the input specific configurations.
 
   - type: log
-
-    # Change to true to enable this input configuration.
     enabled: true
-
-    # Paths that should be crawled and fetched. Glob based paths.
     paths:
       - /var/log/suricata/eve.json
-      #- c:\programdata\elasticsearch\logs\*
+    fields: {log_type: suricata}
+
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/apache2/modsec_audit.log
+    fields: {log_type: modsecurity}
 
     # Exclude lines. A list of regular expressions to match. It drops the lines that are
     # matching any regular expression from the list.
@@ -71,7 +73,7 @@ filebeat.inputs:
     # Paths that should be crawled and fetched. Glob based paths.
     paths:
       - /var/log/suricata/eve.json
-      #- c:\programdata\elasticsearch\logs\*
+      - /var/log/apache2/modsec_audit.log
 
     # Exclude lines. A list of regular expressions to match. It drops the lines that are
     # matching any regular expression from the list.
