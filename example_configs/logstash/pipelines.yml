@@ -1,0 +1,7 @@
+- pipeline.id: main
+  path.config: "/etc/logstash/conf.d/*.conf"
+- pipeline.id: suricata-processing
+  path.config: "/etc/logstash/conf.d/suricata/*.conf"
+- pipeline.id: modsecurity-processing
+  path.config: "/etc/logstash/conf.d/modsecurity/*.conf"
+
