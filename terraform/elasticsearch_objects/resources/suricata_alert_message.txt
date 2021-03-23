@@ -6,5 +6,5 @@ Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the i
 
 Alerts
 {{#ctx.results.0.hits.hits}}
-Alert signature: {{_source.alert.signature}} Timestamp: {{_source.timestamp}}
+Alert: {{_source.alert.signature}} Timestamp: {{_source.timestamp}}
 {{/ctx.results.0.hits.hits}}
