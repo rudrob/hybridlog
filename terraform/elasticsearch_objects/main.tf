@@ -193,7 +193,7 @@ resource "elasticsearch_opendistro_monitor" "modsecurity_monitor" {
               name = "send_to_sns"
               subject_template = {
                 lang   = "mustache"
-                source = "Suricata alert"
+                source = "Modsecurity alert"
               }
               throttle = {
                 unit  = "MINUTES"
