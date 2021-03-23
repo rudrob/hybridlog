@@ -1,13 +1,22 @@
 locals {
-  sns_arn               = data.terraform_remote_state.main.outputs.sns_arn
+  sns_arn              = data.terraform_remote_state.main.outputs.sns_arn
   es_alerting_role_arn = data.terraform_remote_state.main.outputs.es_alerting_role_arn
 }
 
 # Should rollover be configured? Maybe? But seems not supported easily by provider
-resource "elasticsearch_index" "test" {
-  name = "suricata-log"
-  number_of_shards = 1
-  number_of_replicas = 1
+resource "elasticsearch_index" "suricata-log" {
+  name               = "suricata-log"
+  number_of_shards   = var.shards_num
+  number_of_replicas = var.replicas_num
+  # (Boolean) A boolean that indicates that the index should be deleted even if it contains documents.
+  # ??? is it even working
+  force_destroy = true
+}
+
+resource "elasticsearch_index" "modsecurity-log" {
+  name               = "modsecurity-log"
+  number_of_shards   = var.shards_num
+  number_of_replicas = var.replicas_num
   # (Boolean) A boolean that indicates that the index should be deleted even if it contains documents.
   # ??? is it even working
   force_destroy = true
@@ -30,118 +39,198 @@ resource "elasticsearch_opendistro_destination" "sns_alerts_destination" {
 
 resource "elasticsearch_opendistro_monitor" "suricata_monitor" {
   body = jsonencode(
-  {
-    enabled = true
-    inputs = [
-      {
-        search = {
-          indices = [
-            elasticsearch_index.test.name,
-          ]
-          query = {
+    {
+      enabled = true
+      inputs = [
+        {
+          search = {
+            indices = [
+              elasticsearch_index.suricata-log.name,
+            ]
             query = {
-              bool = {
-                adjust_pure_negative = true
-                boost = 1
-                must = [
-                  {
-                    range = {
-                      "@timestamp" = {
-                      boost = 1
-                      from = "{{period_end}}||-5m"
-                      include_lower = false
-                      include_upper = true
-                      to = "{{period_end}}"
-                    }
-                  }
-                },
-                  {
-                  term = {
-                  event_type = {
-                  boost = 1
-                  value = "alert"
-                         }
-                       }
-                  },
-                ]
+              query = {
+                bool = {
+                  adjust_pure_negative = true
+                  boost                = 1
+                  must = [
+                    {
+                      range = {
+                        "@timestamp" = {
+                          boost         = 1
+                          from          = "{{period_end}}||-5m"
+                          include_lower = false
+                          include_upper = true
+                          to            = "{{period_end}}"
+                        }
+                      }
+                    },
+                    {
+                      term = {
+                        event_type = {
+                          boost = 1
+                          value = "alert"
+                        }
+                      }
+                    },
+                  ]
+                }
               }
             }
           }
+        },
+      ]
+      name = "suricata_alerts"
+      schedule = {
+        period = {
+          interval = 5
+          unit     = "MINUTES"
         }
-      },
-    ]
-    name = "alerts"
-    schedule = {
-      period = {
-        interval = 5
-        unit = "MINUTES"
+      }
+      triggers = [
+        {
+          actions = [
+            {
+              destination_id = elasticsearch_opendistro_destination.sns_alerts_destination.id
+              id             = "sPQ4JngB6ZdXNTBrgUmD"
+              message_template = {
+                lang   = "mustache"
+                source = file("./resources/suricata_alert_message.txt")
+              }
+              name = "send_to_sns"
+              subject_template = {
+                lang   = "mustache"
+                source = "Suricata alert"
+              }
+              throttle = {
+                unit  = "MINUTES"
+                value = 5
+              }
+              throttle_enabled = true
+            },
+          ]
+          condition = {
+            script = {
+              lang   = "painless"
+              source = "ctx.results[0].hits.total.value > 0"
+            }
+          }
+          id       = "r_Q4JngB6ZdXNTBrgUmD"
+          name     = "sns"
+          severity = "1"
+        },
+      ]
+      type = "monitor"
+      user = {
+        backend_roles          = []
+        custom_attribute_names = []
+        name                   = var.master_user_name
+        roles = [
+          "all_access",
+          "security_manager",
+        ]
+        user_requested_tenant = null
       }
     }
-    triggers = [
-      {
-        actions = [
-          {
-            destination_id = elasticsearch_opendistro_destination.sns_alerts_destination.id
-            id = "sPQ4JngB6ZdXNTBrgUmD"
-            message_template = {
-              lang = "mustache"
-              source = file("./resources/suricata_alert_message.txt")
-            }
-            name = "send_email"
-            subject_template = {
-              lang = "mustache"
-              source = "Suricata alert"
-            }
-            throttle = {
-              unit = "MINUTES"
-              value = 5
-            }
-            throttle_enabled = true
-          },
-        ]
-        condition = {
-          script = {
-            lang = "painless"
-            source = "ctx.results[0].hits.total.value > 0"
-          }
-        }
-        id = "r_Q4JngB6ZdXNTBrgUmD"
-        name = "sns"
-        severity = "1"
-      },
-    ]
-    type = "monitor"
-    user = {
-      backend_roles = []
-      custom_attribute_names = []
-      name = "kibanamaster"
-      roles = [
-        "all_access",
-        "security_manager",
-      ]
-      user_requested_tenant = null
-    }
-  }
   )
 }
 
-// this seems to just NOT WORK...
+resource "elasticsearch_opendistro_monitor" "modsecurity_monitor" {
+  body = jsonencode(
+    {
+      enabled = true
+      inputs = [
+        {
+          search = {
+            indices = [
+              elasticsearch_index.modsecurity-log.name,
+            ]
+            query = {
+              query = {
+                bool = {
+                  adjust_pure_negative = true
+                  boost                = 1
+                  must = [
+                    {
+                      range = {
+                        "@timestamp" = {
+                          boost         = 1
+                          from          = "{{period_end}}||-5m"
+                          include_lower = false
+                          include_upper = true
+                          to            = "{{period_end}}"
+                        }
+                      }
+                    },
+                    {
+                      exists : {
+                        "field" : "audit_data.messages"
+                      }
+                    },
+                  ]
+                }
+              }
+            }
+          }
+        },
+      ]
+      name = "modsecurity_alerts"
+      schedule = {
+        period = {
+          interval = 5
+          unit     = "MINUTES"
+        }
+      }
+      triggers = [
+        {
+          actions = [
+            {
+              destination_id = elasticsearch_opendistro_destination.sns_alerts_destination.id
+              id             = "sPQ4JngB6ZdXNTBrgUmD"
+              message_template = {
+                lang   = "mustache"
+                source = file("./resources/modsecurity_alert_message.txt")
+              }
+              name = "send_to_sns"
+              subject_template = {
+                lang   = "mustache"
+                source = "Suricata alert"
+              }
+              throttle = {
+                unit  = "MINUTES"
+                value = 5
+              }
+              throttle_enabled = true
+            },
+          ]
+          condition = {
+            script = {
+              lang   = "painless"
+              source = "ctx.results[0].hits.total.value > 0"
+            }
+          }
+          id       = "r_Q4JngB6ZdXNTBrgUmD"
+          name     = "sns"
+          severity = "1"
+        },
+      ]
+      type = "monitor"
+      user = {
+        backend_roles          = []
+        custom_attribute_names = []
+        name                   = var.master_user_name
+        roles = [
+          "all_access",
+          "security_manager",
+        ]
+        user_requested_tenant = null
+      }
+    }
+  )
+}
 
-//resource "elasticsearch_kibana_object" "test_index_pattern_v7" {
-//  body = <<EOF
-//[
-//  {
-//    "_id": "index-pattern:suricata-log",
-//    "_type": "doc",
-//    "_source": {
-//      "type": "index-pattern",
-//      "index-pattern": {
-//        "title": "suricata-log*",
-//        "timeFieldName": "@timestamp"
-//      }
-//    }
-//  }
-//]
-//EOF
-//}
-
+module "es_users" {
+  count           = var.create_users ? 1 : 0
+  source          = "../modules/es_users"
+  reader_password = var.reader_password
+  writer_password = var.writer_password
+}
