@@ -1,11 +1,3 @@
-resource "aws_iam_user" "es_publisher" {
-  name = "es-publisher"
-}
-
-resource "aws_iam_access_key" "lb" {
-  user = aws_iam_user.es_publisher.name
-}
-
 resource "aws_iam_service_linked_role" "es" {
   count            = var.create_service_linked_role ? 1 : 0
   aws_service_name = "es.amazonaws.com"
