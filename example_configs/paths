@@ -1,0 +1,77 @@
+/usr/share/logstash/bin executables 
+/etc/systemd/system/logstash.service service definition
+/etc/default/logstash env variables
+
+
+logstash localhost:5044
+kibana localhost:5601
+
+***
+
+SURICATA
+
+alert icmp any any -> any any (msg: "ICMP Packet found";)
+/var/lib/suricata/rules/suricata.rules
+alert icmp any any -> 142.250.75.14 any (msg: "Example - ICMP packet to 1st ip";sid:123456;)
+alert icmp any any -> 54.239.28.85 any (msg: "Example - ICMP packet to 2nd ip";sid:123457;)
+alert icmp any any -> 51.83.237.191 any (msg: "Example - ICMP packet to 3rd ip";sid:123458;)
+
+
+suricata log:
+/var/log/suricata/eve.json
+
+suricata files directory
+/home/rob/Desktop/suricata-6.0.1
+suricata -c /etc/suricata/suricata.yaml -i enp0s3
+
+"event_type":"alert"
+
+suricata config
+/etc/suricata/suricata.yaml
+/etc/suricata/
+
+***
+
+MODSECURITY
+
+SecAuditLogFormat json
+
+configuration
+/etc/modsecurity/modsecurity.conf (modsecurity.conf-recommended has default rules)
+/usr/share/modsecurity-crs/rules (rules directory)
+
+logs apache
+/var/log/apache2/access.log
+/var/log/apache2/error.log
+
+modsecurity log
+/var/log/apache2/modsec_audit.log
+
+http://127.0.0.1/index.html?exec=/bin/bash
+
+
+***
+LOGSTASH
+
+service logstash status
+
+/etc/logstatsh/logstash.yml -> generic logstash settings
+/etc/logstash/pipelines.yml -> one main configured
+/etc/logstash/conf.d/logstash.conf -> main pipeline
+
+
+***
+
+BEATS
+service filebeat start
+
+
+
+
+
+
+
+
+
+
+
