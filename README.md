@@ -8,11 +8,11 @@ This project is available under free MIT license
 * Place any secrets in "secrets.auto.tfvars", other tfvars are not gitignored
 
 ---
-Useful links
-https://www.elastic.co/guide/en/logstash/current/pipeline-to-pipeline.html#distributor-pattern
-https://logz.io/blog/managing-elasticsearch-indices/
-https://github.com/phillbaker/terraform-provider-elasticsearch
-https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains-snapshots.html
+Useful links <br/>
+[https://www.elastic.co/guide/en/logstash/current/pipeline-to-pipeline.html#distributor-pattern]
+[https://logz.io/blog/managing-elasticsearch-indices/]
+[https://github.com/phillbaker/terraform-provider-elasticsearch]
+[https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains-snapshots.html]
 
 
 
